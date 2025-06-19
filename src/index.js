@@ -2,17 +2,25 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const mysql = require('mysql2/promise');
 
+// Load environment variables if not in production (e.g., development)
+// In a Railway deployment, these variables are automatically available.
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-// Create MySQL connection pool
+// Create MySQL connection pool using environment variables
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'teC572213+',
-  database: 'appv1_db',
+  // Prioritize private domain for Railway internal connections
+  host: process.env.MYSQLHOST || process.env.RAILWAY_PRIVATE_DOMAIN || 'localhost',
+  user: process.env.MYSQLUSER || 'root',
+  password: process.env.MYSQLPASSWORD || process.env.MYSQL_ROOT_PASSWORD || 'teC572213+',
+  database: process.env.MYSQLDATABASE || process.env.MYSQL_DATABASE || 'appv1_db',
+  port: process.env.MYSQLPORT || process.env.RAILWAY_TCP_PROXY_PORT || 3306, // Use MYSQLPORT or the public proxy port
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -36,6 +44,7 @@ const createWindow = () => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
+
 
 // Handle get-purchase-orders request
 ipcMain.handle('get-purchase-orders', async () => {
@@ -163,6 +172,3 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.

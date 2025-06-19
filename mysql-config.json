@@ -1,0 +1,30 @@
+{
+  "database": {
+    "name": "appv1_db",
+    "host": "${RAILWAY_PRIVATE_DOMAIN}",
+    "port": "3306",
+    "user": "root",
+    "password": "teC572213+",
+    "root_password": "xAYmvMcbHkpjexzmQanVLblogxkDFgss"
+  },
+  "connection_urls": {
+    "public_url": "mysql://${MYSQLUSER}:${MYSQL_ROOT_PASSWORD}@${RAILWAY_TCP_PROXY_DOMAIN}:${RAILWAY_TCP_PROXY_PORT}/${MYSQL_DATABASE}",
+    "private_url": "mysql://${MYSQLUSER}:${MYSQL_ROOT_PASSWORD}@${RAILWAY_PRIVATE_DOMAIN}:3306/${MYSQL_DATABASE}"
+  },
+  "environment_variables": {
+    "MYSQL_DATABASE": "appv1_db",
+    "MYSQL_PUBLIC_URL": "mysql://${MYSQLUSER}:${MYSQL_ROOT_PASSWORD}@${RAILWAY_TCP_PROXY_DOMAIN}:${RAILWAY_TCP_PROXY_PORT}/${MYSQL_DATABASE}",
+    "MYSQL_ROOT_PASSWORD": "xAYmvMcbHkpjexzmQanVLblogxkDFgss",
+    "MYSQL_URL": "mysql://${MYSQLUSER}:${MYSQL_ROOT_PASSWORD}@${RAILWAY_PRIVATE_DOMAIN}:3306/${MYSQL_DATABASE}",
+    "MYSQLDATABASE": "${MYSQL_DATABASE}",
+    "MYSQLHOST": "${RAILWAY_PRIVATE_DOMAIN}",
+    "MYSQLPASSWORD": "teC572213+",
+    "MYSQLPORT": "3306",
+    "MYSQLUSER": "root"
+  },
+  "railway_variables": {
+    "RAILWAY_PRIVATE_DOMAIN": "${RAILWAY_PRIVATE_DOMAIN}",
+    "RAILWAY_TCP_PROXY_DOMAIN": "${RAILWAY_TCP_PROXY_DOMAIN}",
+    "RAILWAY_TCP_PROXY_PORT": "${RAILWAY_TCP_PROXY_PORT}"
+  }
+} 
