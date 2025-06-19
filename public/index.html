@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Purchase Orders Management - Web App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background-color: #f8f9fa;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .app-container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background-color: #ffffff;
+        border-right: 1px solid #e9ecef;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+      }
+
+      .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .app-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #495057;
+      }
+
+      .sidebar-nav {
+        flex: 1;
+        padding: 20px 0;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: #6c757d;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .nav-item:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+      }
+
+      .nav-item.active {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        border-right: 3px solid #1976d2;
+      }
+
+      .nav-item i {
+        width: 20px;
+        margin-right: 12px;
+        font-size: 16px;
+      }
+
+      .sidebar-footer {
+        padding: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        background-color: #6c757d;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+      }
+
+      .user-avatar i {
+        color: white;
+        font-size: 16px;
+      }
+
+      .user-info h4 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 2px;
+      }
+
+      .user-info p {
+        font-size: 12px;
+        color: #6c757d;
+      }
+
+      .user-actions button {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #dee2e6;
+        background-color: #ffffff;
+        color: #495057;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-bottom: 8px;
+        transition: all 0.2s;
+      }
+
+      .user-actions button:hover {
+        background-color: #f8f9fa;
+      }
+
+      .btn-logout {
+        background-color: #dc3545 !important;
+        color: white !important;
+        border-color: #dc3545 !important;
+      }
+
+      .btn-logout:hover {
+        background-color: #c82333 !important;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .header {
+        background-color: #ffffff;
+        padding: 20px 30px;
+        border-bottom: 1px solid #e9ecef;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .header-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 5px;
+      }
+
+      .header-subtitle {
+        font-size: 14px;
+        color: #6c757d;
+      }
+
+      .content-area {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+      }
+
+      /* Dashboard Styles */
+      .dashboard-welcome {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+
+      .dashboard-welcome h2 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
+      .dashboard-welcome p {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      .dashboard-section {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .dashboard-header h3 {
+        font-size: 20px;
+        color: #495057;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-1px);
+      }
+
+      .btn-primary i {
+        margin-right: 8px;
+      }
+
+      /* Table Styles */
+      .po-table-container {
+        overflow-x: auto;
+      }
+
+      .po-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+
+      .po-table th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        padding: 15px 12px;
+        text-align: left;
+        border-bottom: 2px solid #dee2e6;
+        font-size: 14px;
+      }
+
+      .po-table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #e9ecef;
+        color: #495057;
+        font-size: 14px;
+      }
+
+      .po-table tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+
+      .status-pendiente {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+
+      .status-aprobado {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .status-rechazado {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .status-ordenado {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+
+      .status-recibido {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .btn-success:hover {
+        background-color: #218838;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: #c82333;
+      }
+
+      .btn-warning {
+        background-color: #ffc107;
+        color: #212529;
+      }
+
+      .btn-warning:hover {
+        background-color: #e0a800;
+      }
+
+      .btn-info {
+        background-color: #17a2b8;
+        color: white;
+      }
+
+      .btn-info:hover {
+        background-color: #138496;
+      }
+
+      .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background-color: #5a6268;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+      }
+
+      .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        border-radius: 12px;
+        padding: 30px;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #495057;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #6c757d;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+      }
+
+      .close-btn:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #495057;
+        font-size: 14px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.2s;
+        background-color: white;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+      }
+
+      .form-row {
+        display: flex;
+        gap: 20px;
+      }
+
+      .form-col {
+        flex: 1;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid #6c757d;
+        color: #6c757d;
+      }
+
+      .btn-outline:hover {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      /* Message Styles */
+      .message {
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        display: none;
+      }
+
+      .message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .message.show {
+        display: block;
+      }
+
+      /* View Management */
+      .view {
+        display: none;
+      }
+
+      .view.active {
+        display: block;
+      }
+
+      /* Status Dropdown */
+      .status-dropdown {
+        padding: 4px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 12px;
+        background-color: white;
+        min-width: 100px;
+      }
+
+      .status-dropdown:disabled {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        cursor: not-allowed;
+      }
+
+      /* Total Display */
+      #total-display {
+        display: none;
+        background-color: #e3f2fd;
+        border: 1px solid #90caf9;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      #total-display strong {
+        color: #1976d2;
+        font-size: 16px;
+      }
+
+      /* Read-only notice */
+      .read-only-notice {
+        background-color: #fff3cd;
+        color: #856404;
+        padding: 12px 16px;
+        border: 1px solid #ffeaa7;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .app-container {
+          flex-direction: column;
+        }
+        
+        .sidebar {
+          width: 100%;
+          height: auto;
+        }
+        
+        .sidebar-nav {
+          display: flex;
+          overflow-x: auto;
+          padding: 10px 0;
+        }
+        
+        .nav-item {
+          white-space: nowrap;
+          min-width: auto;
+        }
+        
+        .content-area {
+          padding: 15px;
+        }
+        
+        .form-row {
+          flex-direction: column;
+        }
+        
+        .modal-content {
+          width: 95%;
+          margin: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <div class="app-title">Purchase Orders</div>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <div class="nav-item active" data-view="dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            Dashboard
+          </div>
+          <div class="nav-item" data-view="purchase-orders">
+            <i class="fas fa-shopping-cart"></i>
+            Órdenes de Compra
+          </div>
+          <div class="nav-item" data-view="expenses">
+            <i class="fas fa-chart-line"></i>
+            Gastos
+          </div>
+          <div class="nav-item" data-view="admin">
+            <i class="fas fa-cog"></i>
+            Administración
+          </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+              <h4>Standard User</h4>
+              <p>Usuario</p>
+            </div>
+          </div>
+          <div class="user-actions">
+            <button onclick="window.location.reload()">
+              <i class="fas fa-sync"></i> Actualizar
+            </button>
+            <button class="btn-logout" onclick="alert('Logout functionality would go here')">
+              <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <div class="header">
+          <div class="header-title" id="page-title">Gestión de órdenes de compra</div>
+          <div class="header-subtitle" id="page-subtitle">Panel de control para gestión de órdenes de compra</div>
+        </div>
+        
+        <div class="content-area">
+          <!-- Dashboard View -->
+          <div id="dashboard-view" class="view active">
+            <div class="dashboard-welcome">
+              <h2>Bienvenido al Sistema de Órdenes de Compra</h2>
+              <p>Gestiona eficientemente todas las órdenes de compra de tu organización</p>
+            </div>
+            
+            <div class="dashboard-section">
+              <div class="dashboard-header">
+                <h3>Órdenes Recientes</h3>
+                <button class="btn-primary" onclick="openNewOrderModal()">
+                  <i class="fas fa-plus"></i>
+                  Nueva Orden
+                </button>
+              </div>
+              
+              <div class="po-table-container">
+                <table class="po-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Artículo</th>
+                      <th>Cantidad</th>
+                      <th>Precio Unitario</th>
+                      <th>Total</th>
+                      <th>Proveedor</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-table-body">
+                    <!-- Data will be loaded here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Purchase Orders View -->
+          <div id="purchase-orders-view" class="view">
+            <div class="dashboard-section">
+              <div class="dashboard-header">
+                <h3>Todas las Órdenes de Compra</h3>
+                <button class="btn-primary" onclick="openNewOrderModal()">
+                  <i class="fas fa-plus"></i>
+                  Nueva Orden
+                </button>
+              </div>
+              
+              <div class="po-table-container">
+                <table class="po-table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Artículo</th>
+                      <th>Cantidad</th>
+                      <th>Precio Unitario</th>
+                      <th>Total</th>
+                      <th>Proveedor</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="purchase-orders-table-body">
+                    <!-- Data will be loaded here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Expenses View -->
+          <div id="expenses-view" class="view">
+            <div class="dashboard-section">
+              <h3>Módulo de Gastos</h3>
+              <p>Esta funcionalidad estará disponible próximamente.</p>
+            </div>
+          </div>
+
+          <!-- Admin View -->
+          <div id="admin-view" class="view">
+            <div class="dashboard-section">
+              <h3>Panel de Administración</h3>
+              <p>Esta funcionalidad estará disponible próximamente.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Order Modal -->
+    <div id="new-order-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">Nueva Orden de Compra</h2>
+          <button class="close-btn" onclick="closeNewOrderModal()">&times;</button>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <form id="addPurchaseOrderForm">
+          <div class="form-group">
+            <label for="articulo" class="form-label">Artículo *</label>
+            <input type="text" id="articulo" name="articulo" class="form-control" required>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <label for="cantidad" class="form-label">Cantidad *</label>
+              <input type="number" id="cantidad" name="cantidad" class="form-control" min="1" required>
+            </div>
+            <div class="form-col">
+              <label for="precio_por_unidad" class="form-label">Precio por Unidad (MXN) *</label>
+              <input type="number" id="precio_por_unidad" name="precio_por_unidad" class="form-control" step="0.01" min="0.01" required>
+            </div>
+          </div>
+          
+          <div id="total-display">
+            <strong>Total: <span id="calculated-total">$0.00 MXN</span></strong>
+          </div>
+          
+          <div class="form-group">
+            <label for="proveedor" class="form-label">Proveedor *</label>
+            <input type="text" id="proveedor" name="proveedor" class="form-control" required>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-col">
+              <label for="fecha_de_orden" class="form-label">Fecha de Orden *</label>
+              <input type="date" id="fecha_de_orden" name="fecha_de_orden" class="form-control" required>
+            </div>
+            <div class="form-col">
+              <label for="estado" class="form-label">Estado</label>
+              <select id="estado" name="estado" class="form-control" disabled>
+                <option value="Pendiente">Pendiente</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" onclick="closeNewOrderModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Crear Orden</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Status Confirmation Modal -->
+    <div id="status-confirm-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="confirm-title">Confirmar Acción</h2>
+          <button class="close-btn" onclick="closeStatusConfirmModal()">&times;</button>
+        </div>
+        
+        <div id="confirm-message">
+          <p id="confirm-text"></p>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" onclick="closeStatusConfirmModal()">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="confirm-action-btn" onclick="executeStatusUpdate()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html> 
