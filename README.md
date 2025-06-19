@@ -71,9 +71,26 @@ Before running this application, make sure you have the following installed:
    npm install
    ```
 
+3. **Set up environment variables**:
+   - For local development: The `local.env` file is already configured with local settings
+   - For production: Copy `production.env` to `.env` and update Railway-specific values
+   ```bash
+   # For local development (already configured)
+   cp local.env .env
+   
+   # For production deployment
+   cp production.env .env
+   # Then edit .env with your Railway-specific values
+   ```
+
 ## Running the Application
 
-### Development Mode (with auto-restart)
+### Local Development Mode (with environment variables)
+```bash
+npm run dev:env
+```
+
+### Standard Development Mode
 ```bash
 npm run dev
 ```
@@ -81,6 +98,11 @@ npm run dev
 ### Production Mode
 ```bash
 npm start
+```
+
+### Railway Production Mode
+```bash
+npm run start:railway
 ```
 
 The application will be available at: `http://localhost:3000`

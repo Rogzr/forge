@@ -1,3 +1,4 @@
+require('dotenv').config({ path: './local.env' });
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
@@ -11,12 +12,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Create MySQL connection pool (same configuration as Electron app)
+// Create MySQL connection pool using environment variables
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'teC572213+',
-  database: 'appv1_db',
+  host: process.env.MYSQLHOST || 'localhost',
+  user: process.env.MYSQLUSER || 'root',
+  password: process.env.MYSQLPASSWORD || 'teC572213+',
+  database: process.env.MYSQL_DATABASE || 'appv1_db',
+  port: process.env.MYSQLPORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -137,11 +139,21 @@ app.get('/api/user-role', async (req, res) => {
     // Role permissions:
     // - 'admin': Full access (create orders, approve/reject, change status, edit/delete)
     // - 'user': Limited access (create orders, view only - no approve/reject, no status changes, no edit/delete)
-    res.json({ success: true, role: 'user' });
+    res.json({ success: true, role: process.env.DEFAULT_USER_ROLE || 'user' });
   } catch (error) {
     console.error('Error getting user role:', error);
     res.status(500).json({ success: false, error: error.message, role: 'user' }); // Default to 'user' on error
   }
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    database: process.env.MYSQL_DATABASE || 'appv1_db'
+  });
 });
 
 // Serve the frontend for all non-API routes

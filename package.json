@@ -8,6 +8,7 @@
     "start": "node server.js",
     "start:railway": "node server-railway.js",
     "dev": "nodemon server.js",
+    "dev:env": "nodemon --exec \"node -r dotenv/config server.js dotenv_config_path=local.env\"",
     "build": "echo \"No build process needed for this web app\"",
     "lint": "echo \"No linting configured\""
   },
